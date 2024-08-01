@@ -1,0 +1,248 @@
+---
+title: "VennDiagrams"
+author: "MelanieOdenkirk"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+# Load necessary libraries
+library(ggplot2)
+library(ggvenn)
+
+# set working directory
+# setwd("R:/Projects/PTFI/PTFI Publications/Apples-to-Apples_OnePaper/ptfi-data-4labs/MSDial-240711_4labs-data/cleaned-data")
+
+```
+
+### Granny Smith Apple
+
+```{r gsmith-apple, include = TRUE, echo=FALSE}
+
+# Read in data
+data <- read.csv("gsmith-apple_GGB100080.csv")
+
+# Convert data frame to a list of vectors for Venn diagram
+sample_lists <- list()
+
+# Assuming your duplicate columns follow a naming pattern like Sample1_1, Sample1_2, etc.
+# Extract unique sample names from the column names (excluding the ID column)
+sample_names <- unique(gsub("_\\d$", "", colnames(data)[-1]))
+
+for (sample in sample_names) {
+  # Combine duplicates for each sample into a single vector of IDs
+  combined_ids <- data$ID[rowSums(data[, grep(sample, colnames(data))] != 0, na.rm = TRUE) > 0]
+  sample_lists[[sample]] <- combined_ids
+}
+
+# Create a Venn diagram
+venn <- ggvenn(
+  sample_lists, 
+  fill_color = c("#41d3bd", "#e63462", "#f08700", "#592e51"),
+  show_percentage = FALSE,  # Show numbers instead of percentages
+  text_size = 6  # Set font size
+)
+
+# Customize the text to be bold
+venn <- venn + theme(text = element_text(face = "bold"))
+
+# Plot the Venn diagram
+print(venn)
+
+# Function to calculate the counts of unique and overlapping IDs
+calculate_venn_counts <- function(sample_lists) {
+  # Get the names of the samples
+  sample_names <- names(sample_lists)
+  
+  # Create a list to hold counts
+  counts <- list()
+  
+  # Get unique counts for each set
+  for (sample in sample_names) {
+    unique_ids <- setdiff(sample_lists[[sample]], unlist(sample_lists[sample_names != sample]))
+    counts[[paste0(sample, "_unique")]] <- length(unique_ids)
+  }
+  
+  # Get overlap counts
+  for (i in seq_along(sample_names)) {
+    for (j in i:length(sample_names)) {
+      if (i != j) {
+        combo <- c(sample_names[i], sample_names[j])
+        overlap_ids <- Reduce(intersect, sample_lists[combo])
+        counts[[paste0("overlap_", paste(combo, collapse = "_"))]] <- length(overlap_ids)
+      }
+    }
+  }
+  
+  # Calculate all possible overlaps
+  for (n in 2:length(sample_names)) {
+    combos <- combn(sample_names, n, simplify = FALSE)
+    for (combo in combos) {
+      if (length(combo) > 1) {
+        overlap_ids <- Reduce(intersect, sample_lists[combo])
+        counts[[paste0("overlap_", paste(combo, collapse = "_"))]] <- length(overlap_ids)
+      }
+    }
+  }
+  
+  # Add the total count to the list
+  all_ids <- unique(unlist(sample_lists))
+  counts[["total"]] <- length(all_ids)
+  
+  return(counts)
+}
+
+# Calculate the counts and save to CSV
+venn_counts <- calculate_venn_counts(sample_lists)
+venn_counts_df <- as.data.frame(t(unlist(venn_counts)), stringsAsFactors = FALSE)
+colnames(venn_counts_df) <- "Count"
+
+# Write the counts to a CSV file
+write.csv(venn_counts_df, "venn_counts.csv", row.names = TRUE)
+```
+
+### Potato
+
+```{r potato, include = TRUE, echo=FALSE}
+
+# Read in data
+data <- read.csv("potato_GGB100014.csv")
+
+# Convert data frame to a list of vectors for Venn diagram
+sample_lists <- list()
+
+# Assuming your duplicate columns follow a naming pattern like Sample1_1, Sample1_2, etc.
+# Extract unique sample names from the column names (excluding the ID column)
+sample_names <- unique(gsub("_\\d$", "", colnames(data)[-1]))
+
+for (sample in sample_names) {
+  # Combine duplicates for each sample into a single vector of IDs
+  combined_ids <- data$ID[rowSums(data[, grep(sample, colnames(data))] != 0, na.rm = TRUE) > 0]
+  sample_lists[[sample]] <- combined_ids
+}
+
+# Create a Venn diagram
+venn <- ggvenn(
+  sample_lists, 
+  fill_color = c("#41d3bd", "#e63462", "#f08700", "#592e51"),
+  show_percentage = FALSE,  # Show numbers instead of percentages
+  text_size = 6  # Set font size
+)
+
+# Customize the text to be bold
+venn <- venn + theme(text = element_text(face = "bold"))
+
+# Plot the Venn diagram
+print(venn)
+```
+
+
+### Gala Apple
+
+```{r gala-apple, include = TRUE, echo=FALSE}
+
+# Read in data
+data <- read.csv("gala-apple_GGB100143.csv")
+
+# Convert data frame to a list of vectors for Venn diagram
+sample_lists <- list()
+
+# Assuming your duplicate columns follow a naming pattern like Sample1_1, Sample1_2, etc.
+# Extract unique sample names from the column names (excluding the ID column)
+sample_names <- unique(gsub("_\\d$", "", colnames(data)[-1]))
+
+for (sample in sample_names) {
+  # Combine duplicates for each sample into a single vector of IDs
+  combined_ids <- data$ID[rowSums(data[, grep(sample, colnames(data))] != 0, na.rm = TRUE) > 0]
+  sample_lists[[sample]] <- combined_ids
+}
+
+# Create a Venn diagram
+venn <- ggvenn(
+  sample_lists, 
+  fill_color = c("#41d3bd", "#e63462", "#f08700", "#592e51"),
+  show_percentage = FALSE,  # Show numbers instead of percentages
+  text_size = 6  # Set font size
+)
+
+# Customize the text to be bold
+venn <- venn + theme(text = element_text(face = "bold"))
+
+# Plot the Venn diagram
+print(venn)
+```
+
+
+### Beef Ribeye
+
+```{r beef, include = TRUE, echo=FALSE}
+
+# Read in data
+data <- read.csv("beef-ribeye_GGB100031.csv")
+
+# Convert data frame to a list of vectors for Venn diagram
+sample_lists <- list()
+
+# Assuming your duplicate columns follow a naming pattern like Sample1_1, Sample1_2, etc.
+# Extract unique sample names from the column names (excluding the ID column)
+sample_names <- unique(gsub("_\\d$", "", colnames(data)[-1]))
+
+for (sample in sample_names) {
+  # Combine duplicates for each sample into a single vector of IDs
+  combined_ids <- data$ID[rowSums(data[, grep(sample, colnames(data))] != 0, na.rm = TRUE) > 0]
+  sample_lists[[sample]] <- combined_ids
+}
+
+# Create a Venn diagram
+venn <- ggvenn(
+  sample_lists, 
+  fill_color = c("#41d3bd", "#e63462", "#f08700", "#592e51"),
+  show_percentage = FALSE,  # Show numbers instead of percentages
+  text_size = 6  # Set font size
+)
+
+# Customize the text to be bold
+venn <- venn + theme(text = element_text(face = "bold"))
+
+# Plot the Venn diagram
+print(venn)
+```
+
+
+
+### Onion
+
+```{r onion, include = TRUE, echo=FALSE}
+
+# Read in data
+data <- read.csv("white-onion_GGB100011.csv")
+
+# Convert data frame to a list of vectors for Venn diagram
+sample_lists <- list()
+
+# Assuming your duplicate columns follow a naming pattern like Sample1_1, Sample1_2, etc.
+# Extract unique sample names from the column names (excluding the ID column)
+sample_names <- unique(gsub("_\\d$", "", colnames(data)[-1]))
+
+for (sample in sample_names) {
+  # Combine duplicates for each sample into a single vector of IDs
+  combined_ids <- data$ID[rowSums(data[, grep(sample, colnames(data))] != 0, na.rm = TRUE) > 0]
+  sample_lists[[sample]] <- combined_ids
+}
+
+# Create a Venn diagram
+venn <- ggvenn(
+  sample_lists, 
+  fill_color = c("#41d3bd", "#e63462", "#f08700", "#592e51"),
+  show_percentage = FALSE,  # Show numbers instead of percentages
+  text_size = 6  # Set font size
+)
+
+# Customize the text to be bold
+venn <- venn + theme(text = element_text(face = "bold"))
+
+# Plot the Venn diagram
+print(venn)
+```
+
+
